@@ -1,3 +1,4 @@
+import copy
 import cv2
 import numpy as np
 from pathlib import Path
@@ -48,19 +49,18 @@ def draw_res(results_all_ims, image_files, whole_image_dir, image_out_dir, exper
         cv2.imwrite(str(image_out_dir + im_name), image_out)
         #cv2.imwrite(str(image_out_dir + fl), image_out)
 
-def get_fpz(results_all_ims, valid_whole_image_dir):
+def get_fpz(results_all_ims):
 
     fpz_out = []
     
-    fn_images = results_all_ims[results_all_ims.confmat=='FP']
+    fp_images = results_all_ims[results_all_ims.confmat=='FP']
     
-    image_files = np.unique(fn_images.filename).tolist()
+    image_files = np.unique(fp_images.filename).tolist()
     image_files = [Path(fl) for fl in image_files]
-    image_files = [img.name for img in image_files]
 
     for fl in image_files:
         # Per image
-        whole_im = cv2.imread(valid_whole_image_dir + fl)
+        whole_im = cv2.imread(str(fl))
         whole_im = cv2.cvtColor(whole_im, cv2.COLOR_BGR2RGB)
 
         fl_png = fl
@@ -82,7 +82,7 @@ def get_fpz(results_all_ims, valid_whole_image_dir):
         
     return fpz_out
 
-def get_fnz(results_all_ims, valid_whole_image_dir):
+def get_fnz(results_all_ims):
 
     fnz_out = []
     
@@ -90,11 +90,10 @@ def get_fnz(results_all_ims, valid_whole_image_dir):
     
     image_files = np.unique(fn_images.filename).tolist()
     image_files = [Path(fl) for fl in image_files]
-    image_files = [img.name for img in image_files]
 
     for fl in image_files:
         # Per image
-        whole_im = cv2.imread(valid_whole_image_dir + fl)
+        whole_im = cv2.imread(str(fl))
         whole_im = cv2.cvtColor(whole_im, cv2.COLOR_BGR2RGB)
 
         fl_png = fl
@@ -127,7 +126,10 @@ def create_mosaic(list_in, mosaic_tuple, image_size, multiplier=1, grey=False):
     if grey:
         channels = 1
     combined_im = np.zeros((img_rw * rowz * multiplier, img_cl * colz * multiplier, channels), dtype=np.uint8)
-    sample_list = random.sample(list_in, rowz*colz)
+    if len(list_in) < rowz*colz:
+        sample_list = list_in + [np.ones((image_size[0], image_size[1], 3))*255] * (rowz*colz - len(list_in))
+    else:
+        sample_list = random.sample(list_in, rowz*colz)
     for idx, im in enumerate(sample_list):
         im_shp = im.shape
         im_rw = im_shp[0]

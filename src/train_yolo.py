@@ -1,5 +1,6 @@
 import json
 import numpy as np
+from pathlib import Path
 import torch
 from torch import optim
 from torch.utils.data import Dataset, DataLoader
@@ -18,13 +19,18 @@ dataset_to_use = 'GFRC'
 bin_yn = True
 grey_tf = False
 orig_size = True 
-name_out = 'rgb_bin'
+# if using metadata
+use_meta = True
+name_out = 'rgb_meta'
 basedir = 'E:/GFRC_data/'
-save_dir = basedir + 'output/' name_out + "/"
-Path(save_dir).mkdir(parents=True, exist_ok=True)
+basedir = 'C:/Users/kryzi/OneDrive - University of St Andrews/PhD/Data_to_Save/'
 nepochs = 200
 # change to restart from an existing epoch
 restartno = -1
+
+save_dir = basedir + 'output/' + name_out + "/"
+Path(save_dir).mkdir(parents=True, exist_ok=True)
+
 
 # colour or greyscale
 if grey_tf:
@@ -32,13 +38,13 @@ if grey_tf:
 else:
     channels_in = 3
 
-# if using metadata
-use_meta = False:
 if use_meta:
     name_out = 'meta_ci_end'
     colz = ['lowerci', 'upperci']
-    metadata_end = True
     channels_in = channels_in + len(colz)
+    metadata_end = True
+else:
+    metadata_end = False
 
 # GFRC values
 img_w = 1856
@@ -49,7 +55,7 @@ anchors = [[2.387088, 2.985595], [1.540179, 1.654902], [3.961755, 3.936809], [2.
             [5.319540, 6.116692]]
 if bin_yn:
     # GFRC Binary values
-    files_location = basedir + 'yolo_train_1248_bin/'
+    files_location = basedir + 'yolo_train_1248_binary/'
     nclazz = 1
 else:
     # GFRC Multi values
@@ -143,9 +149,9 @@ else:
     net = YoloNetOrig(layerlist, fin_size, channels_in)
 
 net = net.to(device)
-if epochstart > 0:
+if restartno > 0:
     save_path = save_dir + save_name + str(restartno) + ".pt"
-net.load_state_dict(torch.load(save_path))
+    net.load_state_dict(torch.load(save_path))
 
 opt = optim.SGD(net.parameters(), lr=learn_rate, momentum=moment, weight_decay=weight_d)
 i = 0
@@ -155,7 +161,7 @@ for epoch in range(epochstart, nepochs):
     tptp = 0
     fpfp = 0
     fnfn = 0
-    for data in animalloader:
+    for idx, data in enumerate(animalloader):
         tot_bat = epoch * n_img / bat_sz  + i
         images = data["image"]
         images = images.to(device)

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.special import expit
-from trch_accuracy import calc_iou_centwh
+from yolo.yolo_accuracy import calc_iou_centwh
 
 
 

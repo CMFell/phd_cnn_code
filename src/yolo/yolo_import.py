@@ -68,7 +68,7 @@ class AnimalBoundBoxMetaDataset(Dataset):
             self.files_list[ff] = self.files_list[ff][:-4]
         self.files_list = np.unique(self.files_list)
         self.gray = gray
-        self.image_data = pd.read_csv(based / 'preds_for_cnn.csv')
+        self.image_data = pd.read_csv(based + 'preds_for_cnn.csv')
         self.metacolumn = metacolumn
 
     def __len__(self):

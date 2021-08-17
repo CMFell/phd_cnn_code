@@ -7,7 +7,7 @@ def get_image_file_names(whole_image_dir):
     image_files_jpg = list(Path(whole_image_dir).glob("**/*.jpg"))
     image_files_png = list(Path(whole_image_dir).glob("**/*.png"))
     image_files = image_files_jpg + image_files_png
-    image_files = [img.name for img in image_files]
+    #image_files = [img.name for img in image_files]
     return image_files
 
 
@@ -81,22 +81,22 @@ def split_filename(str_in):
     return file_out, tile_out
 
 
-def predict_on_images(image_files, whole_image_dir, yolo_model, basedir):
+def predict_on_images(image_files, yolo_model, basedir):
           
     windows_whole = pd.DataFrame(columns=['xc', 'yc', 'wid', 'hei', 'conf', 'class', 'xmn', 'xmx', 'ymn', 'ymx', 'filename'])
 
     for idx, fl in enumerate(image_files):
         # Per image
-        print(fl, idx + 1, "of" len(image_files))
+        print(fl, idx + 1, "of", len(image_files))
         
-        whole_im = io.imread(whole_image_dir + fl, as_gray=False)
+        whole_im = io.imread(fl, as_gray=False)
         orig_im_size = whole_im.shape
         
         # create tiles
         tilez = create_tile_list(whole_im)
 
         # get predictions from yolo , 0.01 keeps confidence over 1% only
-        boxes_whole_im = yolo_model.inference_on_image(tilez, 0.01, fl, basedir)
+        boxes_whole_im = yolo_model.inference_on_image(tilez, 0.01, img_name=fl, basedir=basedir)
         # convert tile results into whole image results
         windows_whole_im = windows_to_whole_im(boxes_whole_im)
         windows_whole_im['filename'] = fl

@@ -6,8 +6,8 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
 from yolo.yolo_accuracy import accuracy, calc_iou_centwh, accuracyiou
-from yolo.yolo_import import AnimalBoundBoxDataset, ToTensor, MakeMat
-from yolo.yolo_net import YoloNet, YoloNetSimp, YoloNetOrig
+from yolo.yolo_import import AnimalBoundBoxDataset, AnimalBoundBoxMetaDataset, ToTensor, MakeMat
+from yolo.yolo_net import YoloNet, YoloNetMeta, YoloNetSimp, YoloNetOrig
 from yolo.yolo_valid_utils import simple_nms, softmax, yolo_output_to_box_vec
 from yolo.yolo_weights import get_weights
 
@@ -19,9 +19,12 @@ dataset_to_use = 'GFRC'
 bin_yn = True
 grey_tf = False
 orig_size = True 
-name_out = 'rgb_bin'
+# if using metadata
+use_meta = True
+name_out = 'rgb_meta'
 basedir = 'E:/GFRC_data/'
-save_dir = basedir + 'output/' name_out + "/"
+basedir = 'C:/Users/kryzi/OneDrive - University of St Andrews/PhD/Data_to_Save/'
+save_dir = basedir + 'output/' + name_out + "/"
 nepochs = 200
 epochstart = 0
 
@@ -31,13 +34,13 @@ if grey_tf:
 else:
     channels_in = 3
 
-# if using metadata
-use_meta = False:
 if use_meta:
     name_out = 'meta_ci_end'
     colz = ['lowerci', 'upperci']
     metadata_end = True
     channels_in = channels_in + len(colz)
+else:
+    metadata_end = False
 
 ### GFRC
 img_w = 1856
@@ -48,7 +51,7 @@ anchors = [[2.387088, 2.985595], [1.540179, 1.654902], [3.961755, 3.936809], [2.
             [5.319540, 6.116692]]
 if bin_yn:
     # Bin
-    files_location = basedir + 'yolo_valid_1248_bin/'
+    files_location = basedir + 'yolo_valid_1248_binary/'
     nclazz = 1
 else:
     # Multi
@@ -79,10 +82,7 @@ input_vec = [grid_w, grid_h, n_box, out_len]
 anchors = np.array(anchors)
 
 for xx in range(epochstart, nepochs):
-    # if xx % 10 == 0:
-    #     pass
-    # else:
-    #    continue
+
     save_path = save_dir + save_name + str(xx) + ".pt" 
     print(save_path)
 
@@ -135,7 +135,8 @@ for xx in range(epochstart, nepochs):
     tottrue = 0
     tottps = 0
 
-    for data in animalloader_valid:
+    for idx, data in enumerate(animalloader_valid):
+        print(idx, "of", len(animalloader_valid))
         images = data["image"]
         images = images.to(device)
         bndbxs = data["bndbxs"]

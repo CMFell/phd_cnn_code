@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -38,9 +40,11 @@ class TileImageTestDatasetMeta(Dataset):
         """
         #self.landmarks_frame = pd.read_csv(csv_file)
         
-        image_data = pd.read_csv(basedir / 'preds_for_cnn.csv')
+        image_data = pd.read_csv(Path(basedir) / 'preds_for_cnn.csv')
         new_channel = np.ones((tiles_list[0].shape[0], tiles_list[0].shape[1], len(metacolumn)))
-        matched_row = image_data[image_data.image_name == imgname]
+        imgname_file = str(Path(imgname.name))
+        print(imgname_file)
+        matched_row = image_data[image_data.image_name == imgname_file]
         fillval = matched_row[metacolumn]
         fillvals = np.expand_dims(fillval, axis=0)
         new_channel = np.multiply(new_channel, fillvals)  

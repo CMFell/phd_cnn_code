@@ -1,15 +1,16 @@
 import os
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
 from preprocess.prepare_data_functions import create_windows, create_tiled_data, create_tiled_data_blanks
 
 
 # Set input directory containing downloaded GFRC data and choose to prepare valid or traindata
 # Directory with files
-basedir = 'E:/GFRC_data/'
+basedir = 'C:/GFRC_data/'
 # type of input valid or train
-settype = 'valid'
+settype = 'train'
 
 # values below here can be varied for other data but are set as used for GFRC
 # binary or multi
@@ -26,16 +27,16 @@ finsize = (size_out[1] * resize_mult, size_out[0] * resize_mult)
 # keep or not blank positive tiles and tiles from negative images prob_blank keeps that percentage of blanks
 kb = True
 keep_negs = True
-prob_blank = 0.01
-
+prob_blank = 0.05
 
 # image dirs
 pos_folder = settype + '_images/pos/'
 neg_folder = settype + '_images/neg/'
 # csv containing object positions
-csv_name = settype + '_images/' + settype + '_GFRC_bboxes_' + binmulti'.csv'
+csv_name = settype + '_images/' + settype + '_GFRC_bboxes_' + binmulti + '.csv'
 # output folder to save tiles
 out_folder = 'yolo_' + settype + '_1248_' + binmulti + '/'
+Path(basedir + out_folder).mkdir(parents=True, exist_ok=True)
 # Full path csv
 csv_file = basedir + csv_name
 # Read in csv file
@@ -50,13 +51,15 @@ gfrcwindz = create_windows(size_out, input_shape, overlap)
 
 # create input for tiling
 dict4tiling = {"base_dir": basedir + pos_folder, "data_list": datalist, "out_path": outpath, "image_shape": input_shape,
-               "size_out": size_out, "final_size" = finsize}
+               "size_out": size_out, "final_size": finsize}
     
 for ff in range(filez_in.shape[0]):
     create_tiled_data(filez_in, ff, gfrcwindz, dict4tiling, keep_blanks=kb, pblank=prob_blank)
 
 if keep_negs:
     dict4tilingneg = {"base_dir": basedir + neg_folder, "data_list": datalist, "out_path": outpath, "image_shape": input_shape,
-                      "size_out": size_out, "final_size" = finsize}
-    create_tiled_datablanks(filez_in, ff, gfrcwindz, dict4tilingneg, pblank=prob_blank)
+                      "size_out": size_out, "final_size": finsize}
+    filez_in_neg = os.listdir(basedir + neg_folder)
+    for ff in range(len(filez_in_neg)):
+        create_tiled_data_blanks(filez_in_neg, ff, gfrcwindz, dict4tilingneg, pblank=prob_blank)
     

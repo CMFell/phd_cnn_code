@@ -209,12 +209,12 @@ def create_tiled_data(filez, fl, windowz, options, keep_blanks=False, pblank=1.0
                           "min_size_x": min_size_x, "min_size_y": min_size_y, "min_pct": min_pct}
         dict_horiz_pix = {"xmin": xminh_px, "xmax": xmaxh_px, "ymin": yminh_px, "ymax": ymaxh_px,
                           "min_size_x": min_size_x, "min_size_y": min_size_y, "min_pct": min_pct,
-                          "final_size": final_size}
-        dict_out_name = {"file_out": file_out, "out_path": out_path, "aug_no": aug_no}
+                          "final_size": final_size, "size_out": size_out}
+        dict_out_name = {"file_out": file_out, "out_path": out_path}
 
         out_string_horiz, out_array_horiz = get_detect_in_wind(file_boxes, dict_horiz_pct)
 
-        image_horiz = get_tile_image(image_in, dict_horiz_pix, resize=resize)
+        image_horiz = get_tile_image(image_in, dict_horiz_pix)
 
         if len(out_string_horiz) > 0:
             tile_name = get_tile_name(wnd, dict_out_name)
@@ -270,7 +270,8 @@ def create_tiled_data_blanks(filez, fl, windowz, options, pblank=1.0):
         ymaxh_px = windowz[wnd, 2]
 
         dict_horiz_pix = {"xmin": xminh_px, "xmax": xmaxh_px, "ymin": yminh_px, "ymax": ymaxh_px,
-                    "final_size": final_size}
+                    "final_size": final_size, "size_out": size_out}
+        dict_out_name = {"file_out": file_out, "out_path": out_path}
 
         image_horiz = get_tile_image(image_in, dict_horiz_pix)
 

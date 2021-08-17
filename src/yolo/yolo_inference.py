@@ -1,4 +1,5 @@
 from abc import ABC
+import os
 
 import numpy as np
 import pandas as pd
@@ -6,20 +7,20 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms, utils
 
-from yolo.trch_weights import get_weights
-from yolo.trch_yolonet import YoloNetOrig, YoloNetMeta
+from yolo.yolo_weights import get_weights
+from yolo.yolo_net import YoloNetOrig, YoloNetMeta
 from yolo.yolo_datasets import TileImageTestDataset, TileImageTestDatasetMeta
 from yolo.yolo_valid_utils import yolo_output_to_box_test
 
 class YoloClass(ABC):
-    def __init__(self, wtpath, channels, img_w=1856, img_h=1248, nclazz=1, meta_cols=None, meta_end=False):
+    def __init__(self, wtpath, channels, basedir, img_w=1856, img_h=1248, nclazz=1, meta_cols=None, meta_end=False):
         self.saveweightspath = wtpath
 
         ### Yolo parameters
         max_annotations = 14
         anchors = [[2.387088, 2.985595], [1.540179, 1.654902], [3.961755, 3.936809], [2.681468, 1.803889], [5.319540, 6.116692]]
         box_size = [32, 32]
-        weightspath = "/data/old_home_dir/ChrissyF/GFRC/yolov2.weights"
+        weightspath = basedir + "weights/yolov2.weights"
         lambda_c = 5.0
         lambda_no = 0.5
         lambda_cl = 1
@@ -44,7 +45,7 @@ class YoloClass(ABC):
             layerlist = get_weights(weightspath)
             self.net = YoloNetOrig(layerlist, fin_size, channels)
         
-    def inference_on_image(self, tilez, conf_threshold, img_name=None, basedir):
+    def inference_on_image(self, tilez, conf_threshold, basedir, img_name=None):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         net = self.net.to(device)
         net.load_state_dict(torch.load(self.saveweightspath))
