@@ -49,6 +49,23 @@ def draw_res(results_all_ims, image_files, whole_image_dir, image_out_dir, exper
         cv2.imwrite(str(image_out_dir + im_name), image_out)
         #cv2.imwrite(str(image_out_dir + fl), image_out)
 
+
+def draw_res_single(results_per_im, image_file, whole_image_dir, image_out_dir, experiment):
+    
+    Path(image_out_dir).mkdir(parents=True, exist_ok=True)
+
+    whole_im = cv2.imread(whole_image_dir + image_file)
+    whole_im = cv2.cvtColor(whole_im, cv2.COLOR_BGR2RGB)
+
+    # draw results on image
+    image_out = draw_results_on_image(whole_im, results_per_im)
+    image_out = cv2.cvtColor(image_out, cv2.COLOR_BGR2RGB)
+    im_name = experiment + '_' + Path(image_file).stem + Path(image_file).suffix
+    cv2.imwrite(str(image_out_dir + im_name), image_out)
+
+    return image_out
+
+
 def get_fpz(results_all_ims):
 
     fpz_out = []

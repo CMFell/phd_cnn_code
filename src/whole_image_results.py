@@ -14,7 +14,6 @@ from yolo.yolo_inference import YoloClass
 
 # Select base directory where downloaded image files and weights saved 
 basedir = "/data/GFRC_data/"
-basedir = "C:/Users/kryzi/data_mini/"
 # type of input valid or train
 settype = 'valid'
 # Select from one of two pretrained models or other for a newly trained one
@@ -42,7 +41,6 @@ calcuate_confusion_matrices = True
 # Set list of example images to draw results on
 if settype == 'valid':  
     image_files_to_draw = ['neg/Z162_Img09635.jpg', 'pos/Z138_Img02888.jpg', 'neg/Z247_Img14318.jpg', 'pos/Z124_Img13083.jpg']
-    #image_files_to_draw = ['neg/Z29_Img01123.jpg', 'pos/Z137_Img01927.jpg']
 else:
     image_files_to_draw = ['neg/Z81_Img06976.jpg', 'pos/Z108_Img00684.jpg', 'pos/Z110_Img02292.jpg', 'pos/Z123_Img12080.jpg']
 
@@ -117,16 +115,16 @@ if predict_results:
     image_files = get_image_file_names(whole_image_dir)
     yolo_model = YoloClass(wtpath=saveweightspath, channels=channels_in, nclazz=nclazz, 
                            meta_cols=col_list, meta_end=meta_end, basedir=basedir)
-    gfrc_windows_in = predict_on_images(image_files, yolo_model, basedir)
+    gfrc_windows = predict_on_images(image_files, yolo_model, basedir)
     windows_filename = name_out + '_windows.csv'
-    gfrc_windows_in.to_csv(output_save_dir + windows_filename, index=False)
+    gfrc_windows.to_csv(output_save_dir + windows_filename, index=False)
 else:
     windows_filename = name_out + '_windows.csv'
     gfrc_windows = pd.read_csv(output_save_dir + windows_filename)
 
 if results_all_thresholds:
     # remove too big and too small detections
-    gfrc_windows = remove_on_size(gfrc_windows_in)
+    gfrc_windows = remove_on_size(gfrc_windows)
     gfrc_metrics = calculate_threshold_results(gfrc_windows, gfrc_truth, whole_image_dir, 0.25, 0.25, 'mean', 0.05, 96)
     gfrc_metrics.to_csv(output_save_dir + name_out + "_metrics.csv", index=False)
 else:

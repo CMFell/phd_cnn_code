@@ -312,6 +312,16 @@ def single_threshold_results(windows_df, truth_df, im_dir, thresh, nms_threshold
     return result_th
 
 
+def single_image_results(windows_df, truth_df, im_dir, thresh, nms_threshold=0.05, iou_threshold=0.25, method='first'):
+
+    detections_th = windows_df[windows_df.conf > thresh]
+    detections_th['class'] = detections_th['class'].add(1)
+    detections_th = nms_per_im(detections_th, nms_threshold, method)
+    result_th = match_to_truth_im(detections_th, truth_df, iou_threshold)
+
+    return result_th
+
+
 def get_image_stats(detections_df):
     unique_images = np.unique(detections_df.filename)
     tpz = []

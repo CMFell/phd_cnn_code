@@ -22,8 +22,7 @@ orig_size = True
 # if using metadata
 use_meta = True
 name_out = 'rgb_meta'
-basedir = 'E:/GFRC_data/'
-basedir = 'C:/Users/kryzi/OneDrive - University of St Andrews/PhD/Data_to_Save/'
+basedir = '/data/GFRC_data/'
 nepochs = 200
 # change to restart from an existing epoch
 restartno = -1
