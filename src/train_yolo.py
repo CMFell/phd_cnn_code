@@ -15,10 +15,7 @@ from yolo.yolo_weights import get_weights
 print(torch.cuda.is_available())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-dataset_to_use = 'GFRC'
-bin_yn = True
-grey_tf = False
-orig_size = True 
+
 # if using metadata
 use_meta = True
 name_out = 'rgb_meta'
@@ -30,6 +27,10 @@ restartno = -1
 save_dir = basedir + 'output/' + name_out + "/"
 Path(save_dir).mkdir(parents=True, exist_ok=True)
 
+dataset_to_use = 'GFRC'
+bin_yn = True
+grey_tf = False
+orig_size = True 
 
 # colour or greyscale
 if grey_tf:
