@@ -14,7 +14,6 @@ from yolo.yolo_inference import YoloClass
 
 # Select base directory where downloaded image files and weights saved 
 basedir = "/data/GFRC_data/"
-basedir = 'C:/Users/kryzi/OneDrive - University of St Andrews/PhD/Data_to_Save/'
 # type of input valid or train
 settype = 'valid'
 image_file = 'pos/Z138_Img02888.jpg'
@@ -27,7 +26,7 @@ model_to_use = ['without_metadata', 'with_metadata', 'other'][0]
 # Each step saves results and by setting to False earlier saved results can be read in instead of recalculating
 
 # 1. Use the model to detect animals in all images
-predict_results = False
+predict_results = True
 # 2. Filter and NMS results and match against truths
 calculate_results_for_threshold = True
 # 3. Draw results on image
